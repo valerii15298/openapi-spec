@@ -27,10 +27,8 @@ import TocSearch from "./TocSearch.astro";
       <button data-close-modal class="sl-flex md:sl-hidden">
         {Astro.locals.t("search.cancelLabel")}
       </button>
-      <div class="search-container">
-        <div id="starlight__search">
-          <TocSearch />
-        </div>
+      <div id="starlight__search">
+        <TocSearch />
       </div>
     </div>
   </dialog>
@@ -186,7 +184,6 @@ import TocSearch from "./TocSearch.astro";
 
     .dialog-frame {
       position: relative;
-      overflow: auto;
       flex-direction: column;
       flex-grow: 1;
       gap: 1rem;
@@ -207,6 +204,9 @@ import TocSearch from "./TocSearch.astro";
 
     #starlight__search {
       --sl-search-cancel-space: 5rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     @media (min-width: 50rem) {
