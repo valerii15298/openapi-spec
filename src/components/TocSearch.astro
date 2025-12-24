@@ -48,8 +48,11 @@ const searchInputId = "search-input";
     selected?.scrollIntoView({ block: "nearest" });
   }
 
-  const container = ul.closest("dialog")!;
-  container.onkeydown = (e) => {
+  const dialog = ul.closest("dialog")!;
+  dialog.addEventListener("close", () => {
+    input.value = "";
+  })
+  dialog.onkeydown = (e) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
       const nextIndex = selected ? Number(selected.dataset.index) + 1 : 0;
