@@ -1,0 +1,154 @@
+---
+import { LinkCard } from "@astrojs/starlight/components";
+import { flattenToc } from "./flatten-toc";
+
+const { toc } = Astro.locals.starlightRoute;
+
+const headersListId = "search-headers";
+const searchInputId = "search-input";
+---
+
+<input id={searchInputId} autocomplete="off" class="search-input" />
+<ul id={headersListId}>
+  {
+    flattenToc(toc?.items || []).map((i, idx) => (
+      <li
+        data-name={i.path.at(-1)}
+        data-path={i.path.slice(0, -1).join(" > ")}
+        data-index={idx}
+      >
+        <LinkCard
+          href={"#" + i.slug}
+          title={i.path.at(-1) || ""}
+          description={i.path.join(" > ")}
+        />
+      </li>
+    ))
+  }
+</ul>
+
+<script>
+  import fuzzysort from "fuzzysort";
+
+  const headersListId = "search-headers";
+  const searchInputId = "search-input";
+
+  const input = document.getElementById(searchInputId) as HTMLInputElement;
+  const ul = document.getElementById(headersListId) as HTMLUListElement;
+
+  let filteredCount = ul.children.length;
+  let selected: HTMLElement | null = null;
+
+  function updateSelected(nextIdx: number) {
+    selected?.classList.remove("selected");
+    selected = ul.querySelector(
+      `[data-index="${nextIdx}"]`
+    ) as HTMLElement | null;
+    selected?.classList.add("selected");
+    selected?.scrollIntoView({ block: "nearest" });
+  }
+
+  const container = ul.closest("dialog")!;
+  container.onkeydown = (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const nextIndex = selected ? Number(selected.dataset.index) + 1 : 0;
+      if (nextIndex < filteredCount) {
+        updateSelected(nextIndex);
+      } else {
+        updateSelected(0);
+      }
+    }
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const prevIndex = selected
+        ? Number(selected.dataset.index) - 1
+        : filteredCount - 1;
+      if (prevIndex >= 0) {
+        updateSelected(prevIndex);
+      } else {
+        updateSelected(filteredCount - 1);
+      }
+    }
+    if (e.key === "Enter") {
+      selected?.querySelector("a")?.click();
+    }
+  };
+
+  input.addEventListener("input", () => {
+    const query = input.value.toLowerCase();
+
+    const items = [...ul.querySelectorAll("li")].map((li) => {
+      const { name = "", path = "" } = li.dataset;
+      li.hidden = true;
+      li.dataset.index = "";
+      return { li, name, path };
+    });
+    const results = fuzzysort.go(query, items, {
+      keys: ["name", "path"],
+      all: true,
+    });
+
+    const out = results
+      .map((r) => ({
+        score: r.score,
+        ...r.obj,
+        name: r[0].highlight() || r.obj.name,
+        path: r[1].highlight() || r.obj.path,
+      }))
+      .sort((a, b) => b.score - a.score);
+
+    filteredCount = out.length;
+    out.forEach((o, idx) => {
+      o.li.hidden = false;
+      o.li.style.order = String(idx);
+      o.li.dataset.index = String(idx);
+      o.li.querySelector(".description")!.innerHTML = o.path;
+      o.li.querySelector("a span")!.innerHTML = o.name;
+    });
+
+    updateSelected(0);
+  });
+</script>
+
+<style is:global>
+  #search-input {
+    margin-bottom: 10px;
+  }
+
+  #search-headers {
+    padding: 0;
+    padding-block: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    flex: 1;
+    overflow: auto;
+
+    li {
+      scroll-margin: 100px;
+
+      .sl-link-card {
+        background-color: var(--sl-color-black);
+      }
+
+      b {
+        background-color: var(--sl-color-text-accent);
+        color: var(--sl-color-text-invert);
+        padding-inline: 0.1em;
+        margin-inline: 0.1em;
+      }
+
+      &.selected .sl-link-card {
+        background-color: var(--sl-color-accent-low);
+        * {
+          /* font-family: monospace; */
+          font-family: var(--__sl-font);
+        }
+      }
+      &[hidden] {
+        display: none;
+      }
+    }
+  }
+</style>

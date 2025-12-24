@@ -1,0 +1,16 @@
+.sl-container {
+  margin: 0;
+  max-width: unset;
+}
+
+nav.sidebar {
+  /* display: none; */
+}
+
+.main-frame {
+  /* padding-left: 0; */
+}
+
+code {
+  overflow-wrap: unset;
+}
