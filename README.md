@@ -1,6 +1,7 @@
 # Astro OpenAPI Specification
 
 Generated from https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.2.0.md
+
 Official Link: https://spec.openapis.org/oas/v3.2.0.html
 
 

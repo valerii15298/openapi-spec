@@ -4,9 +4,11 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	site: "https://valerii15298.github.io",
+	base: "/openapi-spec",
 	integrations: [
 		starlight({
-			title: 'My Docs',
+			title: 'OpenAPI Specification',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/valerii15298/openapi-spec' }],
 			customCss: ["/src/styles.css"],
 			pagefind: false,
