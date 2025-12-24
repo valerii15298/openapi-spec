@@ -1,5 +1,5 @@
 {
-  "name": "astro-starlight-test",
+  "name": "openapi-spec",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -10,8 +10,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.36.3",
-    "astro": "^5.6.1",
+    "@astrojs/starlight": "^0.37.1",
+    "astro": "^5.16.6",
     "fuzzysort": "^3.1.0",
     "sharp": "^0.34.2"
   }
