@@ -14,6 +14,7 @@
     "astro": "^5.16.6",
     "fuzzysort": "^3.1.0",
     "sharp": "^0.34.2",
-    "starlight-links-validator": "^0.19.2"
+    "starlight-links-validator": "^0.19.2",
+    "starlight-llms-txt": "^0.6.0"
   }
 }

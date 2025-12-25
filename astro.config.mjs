@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightLinksValidator from 'starlight-links-validator';
+import starlightLlmsTxt from 'starlight-llms-txt';
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,7 +17,7 @@ export default defineConfig({
 			components: {
 				Search: './src/components/Search.astro',
 			},
-			plugins: [starlightLinksValidator({errorOnInvalidHashes: false})]
+			plugins: [starlightLinksValidator({errorOnInvalidHashes: false}), starlightLlmsTxt()]
 		}),
 	],
 });
