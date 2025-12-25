@@ -82,6 +82,8 @@ import TocSearch from "./TocSearch.astro";
 
       const openModal = (event?: MouseEvent) => {
         dialog.showModal();
+        // TODO: remove this when safari support is added for dialog `toggle` event
+        dialog.dispatchEvent(new Event("toggle"));
         document.body.toggleAttribute("data-search-modal-open", true);
         this.querySelector("input")?.focus();
         event?.stopPropagation();
