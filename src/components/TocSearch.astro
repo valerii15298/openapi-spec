@@ -16,6 +16,7 @@ const searchInputId = "search-input";
         data-name={i.path.at(-1)}
         data-path={i.path.slice(0, -1).join(" > ")}
         data-index={idx}
+        data-slug={i.slug}
       >
         <LinkCard
           href={"#" + i.slug}
@@ -39,19 +40,40 @@ const searchInputId = "search-input";
   let filteredCount = ul.children.length;
   let selected: HTMLElement | null = null;
 
-  function updateSelected(nextIdx: number) {
+  function updateSelected(
+    nextIdx: number,
+    opts: ScrollIntoViewOptions = { block: "nearest" }
+  ) {
     selected?.classList.remove("selected");
     selected = ul.querySelector(
       `[data-index="${nextIdx}"]`
     ) as HTMLElement | null;
     selected?.classList.add("selected");
-    selected?.scrollIntoView({ block: "nearest" });
+    selected?.scrollIntoView(opts);
   }
 
+  const starlightToc = document.querySelector("starlight-toc")!;
   const dialog = ul.closest("dialog")!;
-  dialog.addEventListener("close", () => {
+  dialog.addEventListener("toggle", () => {
+    if (!dialog.open) return;
+
     input.value = "";
-  })
+    updateResults();
+    const current = starlightToc.querySelector(
+      "a[aria-current]"
+    ) as HTMLAnchorElement | null;
+    if (!current) return;
+
+    const slug = current.hash.slice(1);
+    const li = ul.querySelector(
+      `li[data-slug="${slug}"]`
+    ) as HTMLLIElement | null;
+    if (!li) return;
+
+    const index = Number(li.dataset.index);
+    updateSelected(index, { block: "center" });
+  });
+
   dialog.onkeydown = (e) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -78,7 +100,7 @@ const searchInputId = "search-input";
     }
   };
 
-  input.addEventListener("input", () => {
+  function updateResults() {
     const query = input.value.toLowerCase();
 
     const items = [...ul.querySelectorAll("li")].map((li) => {
@@ -111,7 +133,9 @@ const searchInputId = "search-input";
     });
 
     updateSelected(0);
-  });
+  }
+
+  input.addEventListener("input", updateResults);
 </script>
 
 <style is:global>
@@ -129,7 +153,7 @@ const searchInputId = "search-input";
     overflow: auto;
 
     li {
-      scroll-margin: 100px;
+      scroll-margin: 50px;
 
       .sl-link-card {
         background-color: var(--sl-color-black);
